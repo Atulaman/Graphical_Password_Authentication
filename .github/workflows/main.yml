@@ -74,7 +74,7 @@ jobs:
       run: |
         cd server
         ls -a
-        docker build --build-arg REACT_APP_URL="http://$BACKENDIP:80" -t gpa2023.azurecr.io/gpa-frontend
+        docker build --build-arg REACT_APP_URL="http://$BACKENDIP:80" -t gpa2023.azurecr.io/gpa-frontend .
         az acr login --name gpa2023
         docker push gpa2023.azurecr.io/gpa-frontend
     - name: Create all infrastructure
