@@ -1,0 +1,15 @@
+FROM node:latest as build
+WORKDIR /app
+COPY package*.json ./
+COPY . .
+ARG REACT_APP_URL="http://20.109.231.23:80"
+ENV REACT_APP_URL=$REACT_APP_URL
+RUN npm install
+RUN npm run build
+#2nd stage
+FROM node:alpine
+WORKDIR /myapp
+COPY --from=build /app/build /myapp
+RUN npm install -g http-server
+EXPOSE 80
+CMD ["http-server", "-p", "80", "-d", "false"]

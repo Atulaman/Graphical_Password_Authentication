@@ -1,0 +1,32 @@
+version: '3'
+services:
+  frontend:
+    build: ./server
+    ports:
+      - 3000:80
+    depends_on:
+      - backend
+    networks:
+      - gpa_net
+    
+  backend:
+    build: ./backend
+    ports:
+      - 3003:3003
+    depends_on:
+      - mongo
+    networks:
+      - gpa_net
+  mongo:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - gpa_net
+volumes:
+  mongodb_data:
+networks:
+  gpa_net:
+    driver: bridge
