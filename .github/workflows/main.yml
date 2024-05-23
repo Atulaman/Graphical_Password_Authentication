@@ -1,0 +1,89 @@
+name: Create ACR with Terraform
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.0.0
+
+    - name: Azure install
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y azure-cli
+
+    - name: Azure Login
+      run: az login --username atulaman@rockstarmehta2002gmail.onmicrosoft.com --password Ankur@123
+      #run: az login --service-principal -u ${{ secrets.AZURE_SP_APP_ID }} -p ${{ secrets.AZURE_SP_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+      
+    - name: Change Directory and Terraform operations
+      run: |
+        cd deployment-infrastruture 
+        ls -a
+        terraform init
+    - name: Set Azure Credentials
+      run: |
+        export ARM_CLIENT_ID="${{ secrets.AZURE_SP_APP_ID }}"
+        export ARM_CLIENT_SECRET="${{ secrets.AZURE_SP_PASSWORD }}"
+        export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
+        export ARM_TENANT_ID="${{ secrets.AZURE_TENANT_ID }}"
+    - name: Terraform Apply
+      run: |
+        cd deployment-infrastruture 
+        ls -a
+        terraform apply -target=azurerm_container_registry.gpa -auto-approve
+    - name: login to docker and pull mongoDB and push mongo to ACR
+      run: |
+        docker pull mongo:latest
+        docker tag mongo gpa2023.azurecr.io/mongo
+        az acr login --name gpa2023
+        docker push gpa2023.azurecr.io/mongo
+    
+    - name: build backend docker image and push it to ACR
+      run: |
+        cd backend
+        ls -a
+        docker build -t gpa2023.azurecr.io/gpa-backend .
+        az acr login --name gpa2023
+        docker push gpa2023.azurecr.io/gpa-backend
+    - name: create public ip for backend
+      run: |
+        cd deployment-infrastruture 
+        ls -a
+        terraform apply -target=azurerm_public_ip.proxy -auto-approve
+        export BACKENDIP=$(terraform output backend-ip | tr -d '"')
+    - name: build frontend image and push it to ACR
+      run: |
+        cd server
+        ls -a
+        docker build --build-arg REACT_APP_URL="http://$BACKENDIP:80" -t gpa2023.azurecr.io/gpa-frontend
+        az acr login --name gpa2023
+        docker push gpa2023.azurecr.io/gpa-frontend
+    - name: Create all infrastructure
+      run: |
+        cd deployment-infrastruture
+        ls -a
+        terraform apply -auto-approve
+    - name: restart ACIs
+      run: |
+       az container restart --name example-containergroup --resource-group GPA-auth
+       az container restart --name backend-server-1 --resource-group GPA-auth
+       az container restart --name backend-server-2 --resource-group GPA-auth
+       az container restart --name frontend-server-1 --resource-group GPA-auth
+       az container restart --name frontend-server-2 --resource-group GPA-auth
+    - name: Create all infrastructure
+      run: |
+        cd deployment-infrastruture
+        ls -a
+        terraform apply -auto-approve
