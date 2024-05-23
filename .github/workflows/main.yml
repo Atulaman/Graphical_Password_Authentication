@@ -25,7 +25,8 @@ jobs:
 
     - name: Azure Login
       #run: az login --username atulaman@rockstarmehta2002gmail.onmicrosoft.com --password Ankur@123
-      run: az login --service-principal -u ${{ secrets.SP_APP_ID }} -p ${{ secrets.SP_PASSWORD }} --tenant ${{ secrets.TENANT_ID }}
+      #run: az login --service-principal -u ${{ secrets.SP_APP_ID }} -p ${{ secrets.SP_PASSWORD }} --tenant ${{ secrets.TENANT_ID }}
+      run: az login 
       
     - name: Set Azure Credentials
       run: |
