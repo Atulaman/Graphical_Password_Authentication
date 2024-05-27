@@ -70,13 +70,13 @@ jobs:
         ls -a
         terraform apply -target=azurerm_public_ip.proxy -auto-approve
         export BACKENDIP=$(terraform output backend-ip | tr -d '"')
-        echo "hello duniya:-$(terraform output backend-ip | tr -d '"')"
+        echo "BACKENDIP=${BACKENDIP}" >> $GITHUB_ENV
     - name: build frontend image and push it to ACR
       run: |
         cd server
         ls -a
-        echo $BACKENDIP
-        docker build --build-arg REACT_APP_URL="http://$BACKENDIP:80" -t gpa2023.azurecr.io/gpa-frontend .
+        echo ${{ env.BACKENDIP }}
+        docker build --build-arg REACT_APP_URL="http://${{ env.BACKENDIP }}:80" -t gpa2023.azurecr.io/gpa-frontend .
         az acr login --name gpa2023
         docker push gpa2023.azurecr.io/gpa-frontend
     - name: Create all infrastructure
