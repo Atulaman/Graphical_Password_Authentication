@@ -78,15 +78,15 @@ jobs:
         cd deployment-infrastruture
         ls -a
         terraform apply -auto-approve
-    - name: restart ACIs
-      run: |
-       az container restart --name example-containergroup --resource-group GPA-auth
-       az container restart --name backend-server-1 --resource-group GPA-auth
-       az container restart --name backend-server-2 --resource-group GPA-auth
-       az container restart --name frontend-server-1 --resource-group GPA-auth
-       az container restart --name frontend-server-2 --resource-group GPA-auth
-    - name: Create all infrastructure
-      run: |
-        cd deployment-infrastruture
-        ls -a
-        terraform apply -auto-approve
+    #- name: restart ACIs
+    #  run: |
+    #   az container restart --name example-containergroup --resource-group GPA-auth
+    #   az container restart --name backend-server-1 --resource-group GPA-auth
+    #   az container restart --name backend-server-2 --resource-group GPA-auth
+    #   az container restart --name frontend-server-1 --resource-group GPA-auth
+    #   az container restart --name frontend-server-2 --resource-group GPA-auth
+    #- name: Create all infrastructure
+    #  run: |
+    #    cd deployment-infrastruture
+    #    ls -a
+    #    terraform apply -auto-approve
