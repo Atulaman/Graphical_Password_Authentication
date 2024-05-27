@@ -28,23 +28,23 @@ jobs:
       #run: az login --service-principal -u ${{ secrets.SP_APP_ID }} -p ${{ secrets.SP_PASSWORD }} --tenant ${{ secrets.TENANT_ID }}
       run: az login 
       
-    - name: Set Azure Credentials
-      run: |
-        export ARM_CLIENT_ID="${{ secrets.SP_APP_ID }}"
-        export ARM_CLIENT_SECRET="${{ secrets.SP_PASSWORD }}"
-        export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
-        export ARM_TENANT_ID="${{ secrets.TENANT_ID }}"
+    #- name: Set Azure Credentials
+    #  run: |
+    #    export ARM_CLIENT_ID="${{ secrets.SP_APP_ID }}"
+    #    export ARM_CLIENT_SECRET="${{ secrets.SP_PASSWORD }}"
+    #    export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
+    #    export ARM_TENANT_ID="${{ secrets.TENANT_ID }}"
     - name: Change Directory and Terraform operations
       run: |
         cd deployment-infrastruture 
         ls -a
         terraform init
-    #- name: Set Azure Credentials
-    #  run: |
-    #    export ARM_CLIENT_ID="${{ secrets.AZURE_SP_APP_ID }}"
-     #   export ARM_CLIENT_SECRET="${{ secrets.AZURE_SP_PASSWORD }}"
-     #   export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
-     #   export ARM_TENANT_ID="${{ secrets.AZURE_TENANT_ID }}"
+    - name: Set Azure Credentials
+      run: |
+        export ARM_CLIENT_ID="${{ secrets.AZURE_SP_APP_ID }}"
+        export ARM_CLIENT_SECRET="${{ secrets.AZURE_SP_PASSWORD }}"
+        export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
+        export ARM_TENANT_ID="${{ secrets.AZURE_TENANT_ID }}"
     - name: Terraform Apply
       run: |
         cd deployment-infrastruture 
@@ -70,7 +70,7 @@ jobs:
         ls -a
         terraform apply -target=azurerm_public_ip.proxy -auto-approve
         export BACKENDIP=$(terraform output backend-ip | tr -d '"')
-        echo "BACKENDIP=${BACKENDIP}" >> $GITHUB_ENV
+        
     - name: build frontend image and push it to ACR
       run: |
         cd server
