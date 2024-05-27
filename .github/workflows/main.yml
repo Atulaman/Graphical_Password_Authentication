@@ -70,7 +70,7 @@ jobs:
         ls -a
         terraform apply -target=azurerm_public_ip.proxy -auto-approve
         export BACKENDIP=$(terraform output backend-ip | tr -d '"')
-        echo $BACKENDIP
+        echo "hello duniya:-$(terraform output backend-ip | tr -d '"')"
     - name: build frontend image and push it to ACR
       run: |
         cd server
