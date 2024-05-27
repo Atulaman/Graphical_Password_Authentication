@@ -30,4 +30,5 @@ resource "azurerm_container_group" "frontend2" {
   tags = {
     environment = "production"
   }
+  depends_on = [ azurerm_lb.proxy, azurerm_subnet.frontend ]
 }

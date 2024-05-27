@@ -3,4 +3,5 @@ resource "azurerm_subnet" "firewall" {
   resource_group_name  = azurerm_resource_group.GPA.name
   virtual_network_name = azurerm_virtual_network.proxy.name
   address_prefixes     = ["10.10.0.192/26"]
+  depends_on = [ azurerm_virtual_network.proxy ]
 }

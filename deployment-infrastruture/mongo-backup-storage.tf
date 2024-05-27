@@ -11,4 +11,5 @@ resource "azurerm_storage_share" "DB-Backup" {
   name                 = "db-backup"
   storage_account_name = azurerm_storage_account.backup.name
   quota                = 50
+  depends_on = [ azurerm_storage_account.backup ]
 }

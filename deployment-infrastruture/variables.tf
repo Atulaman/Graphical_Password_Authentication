@@ -1,4 +1,4 @@
-variable "client_secret" {
+/*variable "client_secret" {
   default = "VIa8Q~3b7m5MyV8NY4hx3vlLsxc85vMhCtmZ~cQ_"
 }
 variable "client_id" {
@@ -9,4 +9,4 @@ variable "tenant_id" {
 }
 variable "subs_id" {
   default = "d532fd4c-2fbe-43aa-98b5-9a2e7d3a1b3f"
-}
+}*/

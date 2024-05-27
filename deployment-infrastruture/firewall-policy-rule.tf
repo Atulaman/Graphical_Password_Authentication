@@ -49,4 +49,5 @@ resource "azurerm_firewall_policy_rule_collection_group" "gpa" {
       translated_port     = "80"
     }
   }
+  depends_on = [azurerm_firewall_policy.GPA-fwpolicy]
 }

@@ -32,6 +32,7 @@ resource "azurerm_container_group" "backend1" {
   tags = {
     environment = "production"
   }
+  depends_on = [ azurerm_subnet.proxy, azurerm_container_group.mongo, azurerm_public_ip.proxy ]
 }
 /*resource "null_resource" "update_IMAGEPATH" {
   provisioner "local-exec" {

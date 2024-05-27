@@ -43,6 +43,7 @@ resource "azurerm_container_group" "mongo" {
   tags = {
     environment = "production"
   }
+  depends_on = [ azurerm_storage_share.DB-Backup ]
 }
 output "kuchhbhi" {
   value = azurerm_container_group.mongo.ip_address_type

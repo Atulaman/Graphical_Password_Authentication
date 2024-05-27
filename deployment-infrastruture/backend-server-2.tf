@@ -31,4 +31,5 @@ resource "azurerm_container_group" "backend2" {
   tags = {
     environment = "production"
   }
+  depends_on = [ azurerm_container_group.mongo, azurerm_subnet.proxy, azurerm_public_ip.proxy ]
 }

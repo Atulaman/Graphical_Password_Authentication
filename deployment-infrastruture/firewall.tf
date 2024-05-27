@@ -11,4 +11,5 @@ resource "azurerm_firewall" "gpa-firewall" {
     subnet_id            = azurerm_subnet.firewall.id
     public_ip_address_id = azurerm_public_ip.firewall.id
   }
+  depends_on = [azurerm_subnet.firewall,azurerm_public_ip.firewall, azurerm_firewall_policy.GPA-fwpolicy]
 }

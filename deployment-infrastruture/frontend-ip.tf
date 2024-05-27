@@ -5,4 +5,5 @@ resource "azurerm_public_ip" "frontend" {
   domain_name_label   = "gpa-frontend-authentication-2023" # Change this!
   allocation_method   = "Static"
   sku                 = "Standard"
+  depends_on = [ azurerm_resource_group.GPA ]
 }

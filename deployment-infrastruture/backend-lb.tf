@@ -8,11 +8,13 @@ resource "azurerm_lb" "proxy" {
     name                 = "publicIPAddress"
     public_ip_address_id = azurerm_public_ip.proxy.id
   }
+  depends_on = [ azurerm_public_ip.proxy,azurerm_container_group.backend1,azurerm_container_group.backend2 ]
 }
 
 resource "azurerm_lb_backend_address_pool" "proxy" {
   loadbalancer_id = azurerm_lb.proxy.id
   name            = "proxy-pool"
+  depends_on = [ azurerm_lb.proxy ]
 }
 
 resource "azurerm_lb_probe" "http_probe" {
@@ -21,6 +23,7 @@ resource "azurerm_lb_probe" "http_probe" {
   port            = 3003
   protocol        = "Http"
   request_path    = "/"
+  depends_on = [ azurerm_lb.proxy ]
 }
 
 # Duplicate following two blocks and change to 443/https for secure traffic
@@ -35,6 +38,7 @@ resource "azurerm_lb_rule" "proxy_80" {
   probe_id                       = azurerm_lb_probe.http_probe.id
   backend_address_pool_ids       = [azurerm_lb_backend_address_pool.proxy.id]
   disable_outbound_snat          = true
+  depends_on = [ azurerm_lb_backend_address_pool_address.container-1, azurerm_lb_backend_address_pool_address.container-2 ]
 }
 resource "azurerm_lb_nat_rule" "proxy_80" {
   name = "test_pool"
@@ -48,6 +52,7 @@ resource "azurerm_lb_nat_rule" "proxy_80" {
   frontend_ip_configuration_name = "publicIPAddress"
   idle_timeout_in_minutes        = 4
   backend_address_pool_id = azurerm_lb_backend_address_pool.proxy.id
+  depends_on = [ azurerm_lb_backend_address_pool_address.container-1, azurerm_lb_backend_address_pool_address.container-2 ]
 }
 resource "azurerm_network_security_group" "proxy" {
   name                = "allowInternetzTraffic"
@@ -76,21 +81,25 @@ resource "azurerm_network_security_group" "proxy" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+  depends_on = [ azurerm_subnet.proxy]
 }
 
 resource "azurerm_subnet_network_security_group_association" "proxy" {
   subnet_id                 = azurerm_subnet.proxy.id
   network_security_group_id = azurerm_network_security_group.proxy.id
+  depends_on = [ azurerm_network_security_group.proxy ]
 }
 resource "azurerm_lb_backend_address_pool_address" "container-1" {
   name                    = "container-1"
   backend_address_pool_id = azurerm_lb_backend_address_pool.proxy.id
   virtual_network_id      = azurerm_virtual_network.proxy.id
   ip_address              = azurerm_container_group.backend1.ip_address
+  depends_on = [ azurerm_container_group.backend1, azurerm_lb_backend_address_pool.proxy ]
 }
 resource "azurerm_lb_backend_address_pool_address" "container-2" {
   name                    = "container-2"
   backend_address_pool_id = azurerm_lb_backend_address_pool.proxy.id
   virtual_network_id      = azurerm_virtual_network.proxy.id
   ip_address              = azurerm_container_group.backend2.ip_address
+  depends_on = [ azurerm_container_group.backend2, azurerm_lb_backend_address_pool.proxy ]
 }
