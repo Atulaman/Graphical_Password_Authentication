@@ -23,6 +23,7 @@ resource "azurerm_container_group" "backend2" {
       protocol = "TCP"
     }
     environment_variables = {
+      "PORT"      = "80"
       "DBPATH"    = "${azurerm_container_group.mongo.ip_address}:27017"
       "IMAGEPATH" = "${azurerm_public_ip.proxy.ip_address}:80"
     }
