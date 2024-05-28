@@ -67,7 +67,7 @@ jobs:
       id: output
       run: |
         cd deployment-infrastruture 
-        export IP=$(terraform-bin output -raw backend-ip) | echo "my-ip is $IP"
+        export IP=$(terraform output -raw backend-ip) | echo "my-ip is $IP"
         echo "::set-output name=my_output::$IP"
 
     - name: Set Environment Variable from Terraform Output
