@@ -16,7 +16,7 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
-        terraform_version: 1.0.0
+        #terraform_version: 1.0.0
         terraform_wrapper: false
 
     - name: Azure install
@@ -67,7 +67,8 @@ jobs:
       id: output
       run: |
         cd deployment-infrastruture 
-        export IP=$(terraform output -raw backend-ip) | echo "my-ip is $IP"
+        IP=$(terraform output -raw backend-ip) 
+        echo "my-ip is $IP"
         echo "::set-output name=my_output::$IP"
 
     - name: Set Environment Variable from Terraform Output
