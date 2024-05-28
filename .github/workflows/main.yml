@@ -62,7 +62,13 @@ jobs:
         cd deployment-infrastruture 
         ls -a
         terraform apply -target=azurerm_public_ip.proxy -auto-approve
-        echo "BACKENDIP=13.91.135.57" >> "$GITHUB_ENV"
+    - name: Get Terraform Output
+      id: output
+      run: |
+        echo "::set-output name=my_output::$(terraform output backend-ip | tr -d '"')"
+
+    - name: Set Environment Variable from Terraform Output
+      run: echo "BACKENDIP=${{ steps.output.outputs.my_output }}" >> "$GITHUB_ENV"
     - name: build frontend image and push it to ACR
       run: |
         cd server
