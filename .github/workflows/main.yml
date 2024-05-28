@@ -16,7 +16,8 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
-        terraform_version: 1.0.0
+        #terraform_version: 1.0.0
+        terraform_wrapper: false
 
     - name: Azure install
       run: |
@@ -27,13 +28,6 @@ jobs:
       #run: az login --username atulaman@rockstarmehta2002gmail.onmicrosoft.com --password Ankur@123
       #run: az login --service-principal -u ${{ secrets.SP_APP_ID }} -p ${{ secrets.SP_PASSWORD }} --tenant ${{ secrets.TENANT_ID }}
       run: az login 
-      
-    #- name: Set Azure Credentials
-    #  run: |
-    #    export ARM_CLIENT_ID="${{ secrets.SP_APP_ID }}"
-    #    export ARM_CLIENT_SECRET="${{ secrets.SP_PASSWORD }}"
-    #    export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
-    #    export ARM_TENANT_ID="${{ secrets.TENANT_ID }}"
     - name: Change Directory and Terraform operations
       run: |
         cd deployment-infrastruture 
@@ -56,7 +50,6 @@ jobs:
         docker tag mongo gpa2023.azurecr.io/mongo
         az acr login --name gpa2023
         docker push gpa2023.azurecr.io/mongo
-    
     - name: build backend docker image and push it to ACR
       run: |
         cd backend
@@ -69,14 +62,25 @@ jobs:
         cd deployment-infrastruture 
         ls -a
         terraform apply -target=azurerm_public_ip.proxy -auto-approve
-        export BACKENDIP=$(terraform output backend-ip | tr -d '"')
-        
+    - name: Get Terraform Output
+      id: output
+      run: |
+        cd deployment-infrastruture 
+        IP=$(terraform output -raw backend-ip) 
+        echo "my-ip is $IP"
+        echo "::set-output name=my_output::$IP"
+
+    - name: Set Environment Variable from Terraform Output
+      run: echo "BACKENDIP=${{ steps.output.outputs.my_output }}" >> "$GITHUB_ENV"
+    - name: Verify Environment Variable
+      run: echo "Environment variable BACKENDIP is $BACKENDIP"
+
     - name: build frontend image and push it to ACR
       run: |
         cd server
         ls -a
-        echo ${{ env.BACKENDIP }}
-        docker build --build-arg REACT_APP_URL="http://${{ env.BACKENDIP }}:80" -t gpa2023.azurecr.io/gpa-frontend .
+        echo $BACKENDIP
+        docker build --build-arg REACT_APP_URL="http://$BACKENDIP:80" -t gpa2023.azurecr.io/gpa-frontend .
         az acr login --name gpa2023
         docker push gpa2023.azurecr.io/gpa-frontend
     - name: Create all infrastructure
@@ -84,15 +88,15 @@ jobs:
         cd deployment-infrastruture
         ls -a
         terraform apply -auto-approve
-    - name: restart ACIs
-      run: |
-       az container restart --name example-containergroup --resource-group GPA-auth
-       az container restart --name backend-server-1 --resource-group GPA-auth
-       az container restart --name backend-server-2 --resource-group GPA-auth
-       az container restart --name frontend-server-1 --resource-group GPA-auth
-       az container restart --name frontend-server-2 --resource-group GPA-auth
-    - name: Create all infrastructure
-      run: |
-        cd deployment-infrastruture
-        ls -a
-        terraform apply -auto-approve
+    #- name: restart ACIs
+    #  run: |
+    #   az container restart --name example-containergroup --resource-group GPA-auth
+    #   az container restart --name backend-server-1 --resource-group GPA-auth
+    #   az container restart --name backend-server-2 --resource-group GPA-auth
+    #   az container restart --name frontend-server-1 --resource-group GPA-auth
+    #   az container restart --name frontend-server-2 --resource-group GPA-auth
+    #- name: Create all infrastructure
+    #  run: |
+    #    cd deployment-infrastruture
+    #    ls -a
+    #    terraform apply -auto-approve
