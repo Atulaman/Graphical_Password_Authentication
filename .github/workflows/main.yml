@@ -43,20 +43,20 @@ jobs:
         cd deployment-infrastruture 
         ls -a
         terraform apply -target=azurerm_container_registry.gpa -auto-approve
-    - name: login to docker and pull mongoDB and push mongo to ACR
-      run: |
-        docker pull mongo:latest
-        docker tag mongo gpa2023.azurecr.io/mongo
-        az acr login --name gpa2023
-        docker push gpa2023.azurecr.io/mongo
+    #- name: login to docker and pull mongoDB and push mongo to ACR
+    #  run: |
+    #    docker pull mongo:latest
+    #    docker tag mongo gpa2023.azurecr.io/mongo
+    #    az acr login --name gpa2023
+    #    docker push gpa2023.azurecr.io/mongo
     
-    - name: build backend docker image and push it to ACR
-      run: |
-        cd backend
-        ls -a
-        docker build -t gpa2023.azurecr.io/gpa-backend .
-        az acr login --name gpa2023
-        docker push gpa2023.azurecr.io/gpa-backend
+    #- name: build backend docker image and push it to ACR
+    #  run: |
+    #    cd backend
+    #    ls -a
+    #    docker build -t gpa2023.azurecr.io/gpa-backend .
+    #    az acr login --name gpa2023
+    #    docker push gpa2023.azurecr.io/gpa-backend
     - name: create public ip for backend
       run: |
         cd deployment-infrastruture 
@@ -73,19 +73,19 @@ jobs:
     - name: Verify Environment Variable
       run: echo "Environment variable BACKENDIP is $BACKENDIP"
 
-    - name: build frontend image and push it to ACR
-      run: |
-        cd server
-        ls -a
-        echo $BACKENDIP
-        docker build --build-arg REACT_APP_URL="http://$BACKENDIP:80" -t gpa2023.azurecr.io/gpa-frontend .
-        az acr login --name gpa2023
-        docker push gpa2023.azurecr.io/gpa-frontend
-    - name: Create all infrastructure
-      run: |
-        cd deployment-infrastruture
-        ls -a
-        terraform apply -auto-approve
+    #- name: build frontend image and push it to ACR
+    #  run: |
+    #    cd server
+    #    ls -a
+    #    echo $BACKENDIP
+    #    docker build --build-arg REACT_APP_URL="http://$BACKENDIP:80" -t gpa2023.azurecr.io/gpa-frontend .
+    #    az acr login --name gpa2023
+    #    docker push gpa2023.azurecr.io/gpa-frontend
+    #- name: Create all infrastructure
+    #  run: |
+    #    cd deployment-infrastruture
+    #    ls -a
+    #    terraform apply -auto-approve
     #- name: restart ACIs
     #  run: |
     #   az container restart --name example-containergroup --resource-group GPA-auth
