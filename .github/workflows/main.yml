@@ -66,10 +66,13 @@ jobs:
       id: output
       run: |
         cd deployment-infrastruture 
-        echo "::set-output name=my_output::$(terraform output backend-ip | tr -d '"')"
+        echo "::set-output name=my_output::$(terraform output -raw backend-ip)"
 
     - name: Set Environment Variable from Terraform Output
       run: echo "BACKENDIP=${{ steps.output.outputs.my_output }}" >> "$GITHUB_ENV"
+    - name: Verify Environment Variable
+      run: echo "Environment variable BACKENDIP is $BACKENDIP"
+
     - name: build frontend image and push it to ACR
       run: |
         cd server
