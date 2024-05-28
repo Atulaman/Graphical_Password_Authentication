@@ -65,6 +65,7 @@ jobs:
     - name: Get Terraform Output
       id: output
       run: |
+        cd deployment-infrastruture 
         echo "::set-output name=my_output::$(terraform output backend-ip | tr -d '"')"
 
     - name: Set Environment Variable from Terraform Output
