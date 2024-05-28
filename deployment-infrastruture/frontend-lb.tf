@@ -81,7 +81,7 @@ resource "azurerm_lb_backend_address_pool_address" "container-3" {
   backend_address_pool_id = azurerm_lb_backend_address_pool.frontend.id
   virtual_network_id      = azurerm_virtual_network.proxy.id
   ip_address              = azurerm_container_group.frontend1.ip_address
-  depends_on = [ azurerm_container_group.frontend1, azurerm_lb_backend_address_pool.frontend ]
+  depends_on = [ azurerm_container_group.frontend1, azurerm_lb_backend_address_pool.frontend, azurerm_lb_backend_address_pool_address.container-4 ]
 }
 resource "azurerm_lb_backend_address_pool_address" "container-4" {
   name                    = "container-4"

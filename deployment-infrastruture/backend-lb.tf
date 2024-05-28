@@ -32,15 +32,15 @@ resource "azurerm_lb_rule" "proxy_80" {
   loadbalancer_id                = azurerm_lb.proxy.id
   name                           = "HTTP"
   protocol                       = "Tcp"
-  frontend_port                  = 3003
-  backend_port                   = 3003
+  frontend_port                  = 80//3003
+  backend_port                   = 80//3003
   frontend_ip_configuration_name = "publicIPAddress"
   probe_id                       = azurerm_lb_probe.http_probe.id
   backend_address_pool_ids       = [azurerm_lb_backend_address_pool.proxy.id]
   disable_outbound_snat          = true
   depends_on = [ azurerm_lb_backend_address_pool_address.container-1, azurerm_lb_backend_address_pool_address.container-2 ]
 }
-resource "azurerm_lb_nat_rule" "proxy_80" {
+/*resource "azurerm_lb_nat_rule" "proxy_80" {
   name = "test_pool"
   resource_group_name            = azurerm_resource_group.GPA.name
   loadbalancer_id                = azurerm_lb.proxy.id
@@ -53,7 +53,7 @@ resource "azurerm_lb_nat_rule" "proxy_80" {
   idle_timeout_in_minutes        = 4
   backend_address_pool_id = azurerm_lb_backend_address_pool.proxy.id
   depends_on = [ azurerm_lb_backend_address_pool_address.container-1, azurerm_lb_backend_address_pool_address.container-2 ]
-}
+}*/
 resource "azurerm_network_security_group" "proxy" {
   name                = "allowInternetzTraffic"
   resource_group_name = azurerm_resource_group.GPA.name
@@ -65,7 +65,7 @@ resource "azurerm_network_security_group" "proxy" {
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
-    destination_port_range     = "3003"
+    destination_port_range     = "80"//"3003"
     source_port_range          = "*"
     source_address_prefix      = "*"
     destination_address_prefix = "*"

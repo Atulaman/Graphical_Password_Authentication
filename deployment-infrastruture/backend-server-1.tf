@@ -19,7 +19,7 @@ resource "azurerm_container_group" "backend1" {
     memory = "0.5"
 
     ports {
-      port     = 3003
+      port     = 80//3003
       protocol = "TCP"
     }
     environment_variables = {
